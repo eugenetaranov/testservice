@@ -1,1 +1,1 @@
-# testservice
+Test service responding over http at port 8080 with "service <NAME>" where NAME is taken from env.
