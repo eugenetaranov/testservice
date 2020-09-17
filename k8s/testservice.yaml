@@ -1,0 +1,23 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: testservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: testservice
+  template:
+    metadata:
+      labels:
+        app: testservice
+    spec:
+      containers:
+      - name: testservice
+        image: eugenetaranov/testservice:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: NAME
+          value: testservice
