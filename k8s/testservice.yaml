@@ -35,3 +35,18 @@ spec:
       protocol: TCP
   selector:
     app: testservice
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: testservice
+spec:
+  rules:
+  - host: '*.testservice.local'
+    http:
+      paths:
+      - backend:
+          serviceName: testservice
+          servicePort: 8080
+        path: /
