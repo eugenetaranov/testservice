@@ -10,6 +10,7 @@ import (
 
 func main() {
 	serviceName, _ := os.LookupEnv("NAME")
+	hostname, _ := os.Hostname()
 
 	gin.SetMode(gin.ReleaseMode)
 	gin.DisableConsoleColor()
@@ -20,7 +21,7 @@ func main() {
 		c.Data(
 			http.StatusOK,
 			"text/plain",
-			[]byte(fmt.Sprintf("Service %s\n", serviceName)),
+			[]byte(fmt.Sprintf("Service %s\nHost %s\n", serviceName, hostname)),
 		)
 	})
 
