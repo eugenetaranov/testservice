@@ -12,4 +12,5 @@ USER	app
 ENV     FLASK_APP=main
 EXPOSE 	8080/tcp
 
-CMD     ["python3", "-m" , "flask", "run", "--host=0.0.0.0", "--port=8080"]
+CMD     ["python3", "/app/main.py"]
+
