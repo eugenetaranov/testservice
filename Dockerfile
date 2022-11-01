@@ -1,12 +1,15 @@
-FROM golang:1.14-alpine AS build
+FROM python:3.10-slim
 
-WORKDIR /src/
-COPY	src /src/
-RUN	CGO_ENABLED=0 go build -o /bin/testservice
-
-FROM	alpine:latest
-COPY	--from=build /bin/testservice /bin/testservice
-EXPOSE 	8080/tcp
-RUN	adduser -DS app
+WORKDIR /app
+RUN     useradd -d /app app && \
+        chown -R app /app
 USER	app
-ENTRYPOINT ["/bin/testservice"]
+ENV     FLASK_APP=main
+EXPOSE 	8080/tcp
+
+
+COPY    python/ /app
+RUN     pip3 install --upgrade pip && \
+        pip3 install -r /app/requirements.txt
+
+CMD     ["python3", "-m" , "flask", "run", "--host=0.0.0.0", "--port=8080"]
