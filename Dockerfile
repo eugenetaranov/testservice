@@ -1,9 +1,12 @@
 FROM python:3.10-slim
 
+ENV     DEBIAN_FRONTEND=noninteractive
 WORKDIR /app
 
 COPY    python/ /app
-RUN     pip3 install --upgrade pip && \
+RUN     apt update && \
+        apt install -y curl && \
+        pip3 install --upgrade pip && \
         pip3 install -r /app/requirements.txt
 
 RUN     useradd -d /app app && \
