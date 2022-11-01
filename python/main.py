@@ -2,6 +2,8 @@
 
 from flask import Flask
 import socket
+import sys
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -17,6 +19,8 @@ def health():
     if healthcheck_flag:
         return "Ok", 200
     else:
+        ts = datetime.now().strftime("%Y-%m-%d_%H:%M")
+        print(f"{ts} healtcheck failed", file=sys.stderr)
         return "", 503
 
 
