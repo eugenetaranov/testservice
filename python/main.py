@@ -19,7 +19,7 @@ def health():
     if healthcheck_flag:
         return "Ok", 200
     else:
-        ts = datetime.now().strftime("%Y-%m-%d_%H:%M")
+        ts = datetime.now().strftime("%d/%b/%Y %H:%M:%S")
         print(f"{ts} healtcheck failed", file=sys.stderr)
         return "", 503
 
