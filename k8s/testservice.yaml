@@ -17,6 +17,7 @@ spec:
       containers:
       - name: testservice
         image: eugenetaranov/testservice:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
         livenessProbe:
