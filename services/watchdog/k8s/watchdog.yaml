@@ -46,7 +46,7 @@ data:
     namespaces:
       - int0
     deployments:
-      - alice-job
+      - alice-jobs
 
 ---
 apiVersion: apps/v1
@@ -76,7 +76,7 @@ spec:
         - name: AWS_DEFAULT_REGION
           value: us-east-1
         - name: SLEEP
-          value: 60
+          value: "60"
         volumeMounts:
         - name: watchdog
           mountPath: /conf
