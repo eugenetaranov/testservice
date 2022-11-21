@@ -3,7 +3,7 @@ FROM python:3.10-slim
 ENV     DEBIAN_FRONTEND=noninteractive
 WORKDIR /app
 
-COPY    python/ /app
+COPY    src/ /app
 RUN     apt update && \
         apt install -y curl && \
         pip3 install --upgrade pip && \
