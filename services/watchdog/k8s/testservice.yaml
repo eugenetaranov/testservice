@@ -1,0 +1,32 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: watchdog
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: watchdog
+  template:
+    metadata:
+      labels:
+        app: watchdog
+    spec:
+      terminationGracePeriodSeconds: 120
+      containers:
+      - name: watchdog
+        image: eugenetaranov/watchdog:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+            scheme: HTTP
+        env:
+        - name: NAME
+          value: watchdog
+        - name: AWS_DEFAULT_REGION
+          value: us-east-1
