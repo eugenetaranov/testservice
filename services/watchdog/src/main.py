@@ -1,14 +1,21 @@
 #!/usr/bin/env python
 
 import requests
+import os
+import yaml
 from kubernetes import client, config
 from loguru import logger
+from yaml.loader import SafeLoader
 from time import sleep
-
-POD_NAME = "alice-jobs-79468b8744-pjxbh"
 
 
 def main():
+    config_path = os.getenv("CONFIG_FILE")
+    with open(config_path) as f:
+        cfg = yaml.load(f, Loader=SafeLoader)
+    
+    print(cfg)
+
     config.load_incluster_config()
     v1 = client.CoreV1Api()
 

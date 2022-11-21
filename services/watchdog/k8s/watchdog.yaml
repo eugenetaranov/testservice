@@ -1,8 +1,59 @@
 ---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: watchdog
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: watchdog
+automountServiceAccountToken: true
+
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: watchdog
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["list"]
+
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: watchdog
+subjects:
+- kind: ServiceAccount
+  name: watchdog
+  namespace: watchdog
+roleRef:
+  kind: ClusterRole
+  name: watchdog
+  apiGroup: rbac.authorization.k8s.io
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: watchdog
+  namespace: watchdog
+data:
+  watchdog.yaml: |
+    namespaces:
+      - int0
+    deployments:
+      - alice-job
+
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: watchdog
+  namespace: watchdog
 spec:
   replicas: 1
   selector:
@@ -13,13 +64,23 @@ spec:
       labels:
         app: watchdog
     spec:
-      terminationGracePeriodSeconds: 120
+      serviceAccountName: watchdog
+      terminationGracePeriodSeconds: 10
       containers:
       - name: watchdog
         image: eugenetaranov/watchdog:latest
         imagePullPolicy: Always
         env:
-        - name: NAME
-          value: watchdog
+        - name: CONFIG_FILE
+          value: /conf/watchdog.yaml
         - name: AWS_DEFAULT_REGION
           value: us-east-1
+        volumeMounts:
+        - name: watchdog
+          mountPath: /conf
+          mountPropagation: None
+      volumes:
+        - name: watchdog
+          configMap:
+            name: watchdog
+            defaultMode: 420
