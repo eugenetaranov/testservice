@@ -14,7 +14,7 @@ def main():
     with open(config_path) as f:
         cfg = yaml.load(f, Loader=SafeLoader)
     
-    print(cfg)
+    logger.debug(cfg)
 
     config.load_incluster_config()
     v1 = client.CoreV1Api()
