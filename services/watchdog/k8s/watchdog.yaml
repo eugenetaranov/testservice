@@ -18,13 +18,6 @@ spec:
       - name: watchdog
         image: eugenetaranov/watchdog:latest
         imagePullPolicy: Always
-        ports:
-        - containerPort: 8080
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8080
-            scheme: HTTP
         env:
         - name: NAME
           value: watchdog
