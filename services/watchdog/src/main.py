@@ -4,10 +4,18 @@ import requests
 from loguru import logger
 from time import sleep
 
-ENDPOINT = "http://alice-jobs-79468b8744-pjxbh:8123"
+POD_NAME = "alice-jobs-79468b8744-pjxbh"
 
 while True:
+    ENDPOINT = f"http://{POD_NAME}:8123"
     logger.debug("Test")
-    requests.get(ENDPOINT)
+
+    try:
+        requests.get(ENDPOINT, timeout=1)
+    except requests.exceptions.Timeout:
+        logger.error(f"Timed out query to {POD_NAME}")
+        sleep(30)
+        continue
+    
     logger.debug(requests.text)
     sleep(30)
