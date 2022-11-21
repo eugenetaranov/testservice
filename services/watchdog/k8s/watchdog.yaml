@@ -75,6 +75,8 @@ spec:
           value: /conf/watchdog.yaml
         - name: AWS_DEFAULT_REGION
           value: us-east-1
+        - name: SLEEP
+          value: 60
         volumeMounts:
         - name: watchdog
           mountPath: /conf

@@ -10,9 +10,6 @@ from time import sleep
 from dataclasses import dataclass
 
 
-SLEEP = 30
-
-
 @dataclass
 class Pod:
     name: str
@@ -89,6 +86,8 @@ def run_healthcheck(
 
 
 def main():
+    sleep_sec = int(os.getenv("SLEEP", "10"))
+
     config_path = os.getenv("CONFIG_FILE")
     with open(config_path) as f:
         cfg = yaml.load(f, Loader=SafeLoader)
@@ -101,7 +100,8 @@ def main():
         k = K8S()
 
     while True:
-        pods = k.get_pods(namespaces=["int0"], deployments=["alice-jobs"])
+        pods = k.get_pods(namespaces=cfg["namespaces"], deployments=cfg["deployments"])
+
         for pod in pods:
             run_healthcheck(
                 namespace=pod.namespace,
@@ -111,7 +111,7 @@ def main():
                 port=cfg["port"],
             )
 
-        sleep(SLEEP)
+        sleep(sleep_sec)
 
 
 if __name__ == "__main__":
