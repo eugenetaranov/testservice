@@ -5,5 +5,5 @@ from time import sleep
 
 
 while True:
-    logger.debug("That's it, beautiful and simple logging!")
+    logger.debug("Test")
     sleep(10)
