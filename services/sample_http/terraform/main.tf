@@ -20,7 +20,8 @@ resource "kubernetes_namespace_v1" "default" {
 
 resource "kubernetes_deployment" "testservice" {
   metadata {
-    name = "testservice"
+    name      = "testservice"
+    namespace = kubernetes_namespace_v1.default.metadata[0].name
   }
 
   spec {
@@ -96,7 +97,7 @@ resource "kubernetes_deployment" "testservice" {
           lifecycle {
             pre_stop {
               exec {
-                command = ["/bin/sh","/app/hooks/pre_stop.sh"]
+                command = ["/bin/sh", "/app/hooks/pre_stop.sh"]
               }
             }
           }
@@ -113,16 +114,17 @@ resource "kubernetes_deployment" "testservice" {
 
 resource "kubernetes_service" "testservice" {
   metadata {
-    name = "testservice"
+    name      = "testservice"
+    namespace = kubernetes_namespace_v1.default.metadata[0].name
   }
 
   spec {
     type = "NodePort"
 
     port {
-      port     = 8080
+      port        = 8080
       target_port = 8080
-      protocol = "TCP"
+      protocol    = "TCP"
     }
 
     selector = {
@@ -131,9 +133,10 @@ resource "kubernetes_service" "testservice" {
   }
 }
 
-resource "kubernetes_ingress" "testservice" {
+resource "kubernetes_ingress_v1" "testservice" {
   metadata {
-    name = "testservice"
+    name      = "testservice"
+    namespace = kubernetes_namespace_v1.default.metadata[0].name
   }
 
   spec {
@@ -142,12 +145,16 @@ resource "kubernetes_ingress" "testservice" {
 
       http {
         path {
-          backend {
-            service_name = kubernetes_service.testservice.metadata[0].name
-            service_port = 8080
-          }
-
           path = "/"
+
+          backend {
+            service {
+              name = kubernetes_service.testservice.metadata[0].name
+              port {
+                number = 8080
+              }
+            }
+          }
         }
       }
     }

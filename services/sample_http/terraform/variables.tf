@@ -1,9 +1,9 @@
 variable "cluster_name" {
   description = "EKS cluster name"
-  default = ""
+  default     = ""
 }
 
 variable "namespace" {
   description = "Namespace"
-  default = "test"
+  default     = "test"
 }
