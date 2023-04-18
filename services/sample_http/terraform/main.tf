@@ -116,6 +116,11 @@ resource "kubernetes_service_v1" "testservice" {
   metadata {
     name      = "testservice"
     namespace = kubernetes_namespace_v1.default.metadata[0].name
+
+    annotations = {
+      "traefik.ingress.kubernetes.io/service.sticky.cookie"      = var.stickiness_enabled ? "true" : "false"
+      "traefik.ingress.kubernetes.io/service.sticky.cookie.name" = var.stickiness_enabled ? "testservice" : ""
+    }
   }
 
   spec {

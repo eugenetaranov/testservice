@@ -15,3 +15,9 @@ variable "replicas" {
   default     = 1
   type        = number
 }
+
+variable "stickiness_enabled" {
+  description = "Enable stickiness"
+  default     = false
+  type        = bool
+}
