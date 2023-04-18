@@ -112,19 +112,18 @@ resource "kubernetes_deployment" "testservice" {
   }
 }
 
-resource "kubernetes_service" "testservice" {
+resource "kubernetes_service_v1" "testservice" {
   metadata {
     name      = "testservice"
     namespace = kubernetes_namespace_v1.default.metadata[0].name
   }
 
   spec {
-    type = "NodePort"
-
     port {
       port        = 8080
       target_port = 8080
       protocol    = "TCP"
+      name        = "http"
     }
 
     selector = {
@@ -137,21 +136,22 @@ resource "kubernetes_ingress_v1" "testservice" {
   metadata {
     name      = "testservice"
     namespace = kubernetes_namespace_v1.default.metadata[0].name
+    annotations = {
+      "kubernetes.io/ingress.class" = "internal"
+    }
   }
 
   spec {
     rule {
-      host = "*.testservice.local"
-
+      host = "testservice.local"
       http {
         path {
           path = "/"
-
           backend {
             service {
-              name = kubernetes_service.testservice.metadata[0].name
+              name = "testservice"
               port {
-                number = 8080
+                name = "http"
               }
             }
           }
