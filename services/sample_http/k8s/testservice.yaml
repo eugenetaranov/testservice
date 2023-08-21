@@ -69,9 +69,10 @@ metadata:
 spec:
   type: NodePort
   ports:
-    - port: 8080
+    - port: 80
       targetPort: 8080
       protocol: TCP
+      name: http
   selector:
     app: testservice
 
@@ -82,7 +83,7 @@ metadata:
   name: testservice
 spec:
   rules:
-  - host: '*.testservice.local'
+  - host: testservice.local
     http:
       paths:
       - pathType: Prefix
@@ -91,5 +92,5 @@ spec:
           service:
             name: testservice
             port:
-              number: 8080
+              name: http
 
