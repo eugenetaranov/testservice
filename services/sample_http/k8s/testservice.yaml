@@ -76,7 +76,7 @@ spec:
     app: testservice
 
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: testservice
@@ -85,7 +85,11 @@ spec:
   - host: '*.testservice.local'
     http:
       paths:
-      - backend:
-          serviceName: testservice
-          servicePort: 8080
+      - pathType: Prefix
         path: /
+        backend:
+          service:
+            name: testservice
+            port:
+              number: 8080
+
