@@ -120,7 +120,7 @@ resource "kubernetes_service_v1" "testservice" {
     annotations = {
       "traefik.ingress.kubernetes.io/service.sticky.cookie"        = var.stickiness_enabled ? "true" : "false"
       "traefik.ingress.kubernetes.io/service.sticky.cookie.name"   = var.stickiness_enabled ? "testservice" : ""
-      "traefik.ingress.kubernetes.io/service.sticky.cookie.maxAge" = var.stickiness_enabled ? "30" : ""
+      "traefik.ingress.kubernetes.io/service.sticky.cookie.maxage" = var.stickiness_enabled ? "30" : ""
     }
   }
 
