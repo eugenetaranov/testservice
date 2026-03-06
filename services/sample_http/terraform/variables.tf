@@ -21,3 +21,15 @@ variable "stickiness_enabled" {
   default     = false
   type        = bool
 }
+
+variable "stickiness_maxage" {
+  description = "Sticky cookie max age in seconds"
+  default     = 30
+  type        = number
+}
+
+variable "ingress_dns" {
+  description = "Hostname to be used in ingress"
+  type        = string
+  default     = "testservice.local"
+}
