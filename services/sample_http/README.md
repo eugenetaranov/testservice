@@ -13,6 +13,14 @@ Returns JSON with the pod hostname and request path:
 ### `GET /health`
 Health check endpoint. Returns `200 Ok` when healthy, `503` when unhealthy. Controlled by `src/healthcheck_flag.txt` (`1` = healthy, `0` = unhealthy).
 
+### `GET /delay?duration=<seconds>`
+Sleeps for the requested duration (seconds, float-parseable), then returns JSON with the hostname, path, requested duration, and actual elapsed seconds. Useful for testing slow responses and timeouts. Returns `400` if `duration` is missing or not a number.
+
+```bash
+curl 'http://localhost:8080/delay?duration=2.5'
+# {"hostname":"...","path":"/delay","duration":2.5,"elapsed":2.501}
+```
+
 ## Build
 
 ```bash
