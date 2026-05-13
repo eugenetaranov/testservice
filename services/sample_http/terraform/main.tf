@@ -45,7 +45,7 @@ resource "kubernetes_deployment" "testservice" {
 
         container {
           name  = "testservice"
-          image = "eugenetaranov/testservice:latest"
+          image = "eugenetaranov/sample_http:latest"
 
           image_pull_policy = "Always"
 

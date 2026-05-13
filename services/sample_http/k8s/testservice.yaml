@@ -16,7 +16,7 @@ spec:
       terminationGracePeriodSeconds: 120
       containers:
       - name: testservice
-        image: eugenetaranov/testservice:latest
+        image: eugenetaranov/sample_http:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
