@@ -32,13 +32,28 @@ curl -X POST 'http://localhost:8080/echo?a=1&a=2' -d 'hello'
 ```
 
 ### `GET /stream?chunks=<N>&interval=<ms>`
-Server-Sent Events stream. Emits `chunks` events (default `10`) separated by `interval` milliseconds (default `500`). Each event carries the pod hostname, event index, and elapsed time. Useful for testing ingress idle timeouts, proxy buffering, long-lived connection drain behavior, and sticky-session persistence — without the dependency cost of WebSockets.
+Server-Sent Events stream. Emits `chunks` events (default `10`) separated by `interval` milliseconds (default `500`). Each event carries the pod hostname, event index, and elapsed time. Useful for testing ingress idle timeouts, proxy buffering, long-lived connection drain behavior, and sticky-session persistence. For true bidirectional WebSocket testing (including `Upgrade` handling), see `/ws`.
 
 ```bash
 curl -N 'http://localhost:8080/stream?chunks=5&interval=1000'
 # data: {"hostname":"...","n":0,"elapsed":0.000}
 # data: {"hostname":"...","n":1,"elapsed":1.001}
 # ...
+```
+
+### `GET /ws` (WebSocket)
+WebSocket endpoint. By default echoes any client frame back tagged with the pod hostname. With `interval=<ms>` (>0), also pushes periodic `{hostname, n, elapsed}` JSON frames; with `messages=<N>` (>0), closes after pushing `N` frames. Pass `echo=false` to disable echoing client messages. Useful for testing ingress `Upgrade: websocket` handling, proxy buffering on long-lived connections, drain behavior on pod termination, and sticky sessions across reconnects.
+
+```bash
+# server-push only
+websocat 'ws://localhost:8080/ws?interval=1000&messages=5'
+# {"hostname":"...","n":0,"elapsed":0.000}
+# {"hostname":"...","n":1,"elapsed":1.001}
+# ...
+
+# echo
+echo hello | websocat -n1 'ws://localhost:8080/ws'
+# {"hostname":"...","echo":"hello"}
 ```
 
 ### `GET /memory?mb=<N>&hold=<seconds>`

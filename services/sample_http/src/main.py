@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
 from flask import Flask, request, Response, stream_with_context
+from flask_sock import Sock
 import hashlib
+import json
 import os
 import random
 import re
@@ -12,6 +14,7 @@ import time
 from datetime import datetime
 
 app = Flask(__name__)
+sock = Sock(app)
 
 
 @app.route("/health")
@@ -93,6 +96,56 @@ def stream():
             "X-Accel-Buffering": "no",
         },
     )
+
+
+@sock.route("/ws")
+def ws(ws):
+    try:
+        interval_ms = int(request.args.get("interval", "0"))
+        messages = int(request.args.get("messages", "0"))
+        echo = request.args.get("echo", "true").lower() != "false"
+    except ValueError:
+        ws.send('{"error":"invalid \'interval\'/\'messages\'"}')
+        return
+
+    hostname = socket.gethostname()
+    interval = max(0.0, interval_ms / 1000.0)
+    start = time.monotonic()
+    stop = threading.Event()
+
+    def pusher():
+        n = 0
+        while not stop.is_set():
+            payload = (
+                f'{{"hostname":"{hostname}","n":{n},'
+                f'"elapsed":{time.monotonic() - start:.3f}}}'
+            )
+            try:
+                ws.send(payload)
+            except Exception:
+                return
+            n += 1
+            if messages and n >= messages:
+                try:
+                    ws.close()
+                except Exception:
+                    pass
+                return
+            if stop.wait(interval):
+                return
+
+    if interval > 0:
+        threading.Thread(target=pusher, daemon=True).start()
+
+    try:
+        while True:
+            msg = ws.receive()
+            if msg is None:
+                break
+            if echo:
+                ws.send(f'{{"hostname":"{hostname}","echo":{json.dumps(msg)}}}')
+    finally:
+        stop.set()
 
 
 @app.route("/memory")
