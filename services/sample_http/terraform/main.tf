@@ -106,6 +106,11 @@ resource "kubernetes_deployment" "testservice" {
             name  = "NAME"
             value = "testservice"
           }
+
+          env {
+            name  = "REPLICAS"
+            value = tostring(var.replicas)
+          }
         }
       }
     }

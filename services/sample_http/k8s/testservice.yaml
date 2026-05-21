@@ -67,6 +67,8 @@ spec:
           value: us-east-1
         - name: ENVIRONMENT
           value: int0
+        - name: REPLICAS
+          value: "1"
 
 ---
 apiVersion: v1
