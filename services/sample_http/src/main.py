@@ -105,47 +105,55 @@ def ws(ws):
         messages = int(request.args.get("messages", "0"))
         echo = request.args.get("echo", "true").lower() != "false"
     except ValueError:
-        ws.send('{"error":"invalid \'interval\'/\'messages\'"}')
+        try:
+            ws.send('{"error":"invalid \'interval\'/\'messages\'"}')
+        finally:
+            ws.close(reason=1000, message="bad-args")
         return
 
     hostname = socket.gethostname()
     interval = max(0.0, interval_ms / 1000.0)
     start = time.monotonic()
-    stop = threading.Event()
-
-    def pusher():
-        n = 0
-        while not stop.is_set():
-            payload = (
-                f'{{"hostname":"{hostname}","n":{n},'
-                f'"elapsed":{time.monotonic() - start:.3f}}}'
-            )
-            try:
-                ws.send(payload)
-            except Exception:
-                return
-            n += 1
-            if messages and n >= messages:
-                try:
-                    ws.close()
-                except Exception:
-                    pass
-                return
-            if stop.wait(interval):
-                return
-
-    if interval > 0:
-        threading.Thread(target=pusher, daemon=True).start()
+    n = 0
+    next_push = (start + interval) if interval > 0 else None
 
     try:
         while True:
-            msg = ws.receive()
+            if next_push is not None:
+                wait = max(0.0, next_push - time.monotonic())
+            else:
+                wait = None
+
+            try:
+                msg = ws.receive(timeout=wait)
+            except Exception:
+                return
+
             if msg is None:
-                break
+                # only reachable when wait is a number — i.e. push timer fired
+                try:
+                    ws.send(
+                        f'{{"hostname":"{hostname}","n":{n},'
+                        f'"elapsed":{time.monotonic() - start:.3f}}}'
+                    )
+                except Exception:
+                    return
+                n += 1
+                if messages and n >= messages:
+                    return
+                next_push = time.monotonic() + interval
+                continue
+
             if echo:
-                ws.send(f'{{"hostname":"{hostname}","echo":{json.dumps(msg)}}}')
+                try:
+                    ws.send(f'{{"hostname":"{hostname}","echo":{json.dumps(msg)}}}')
+                except Exception:
+                    return
     finally:
-        stop.set()
+        try:
+            ws.close(reason=1000, message="done")
+        except Exception:
+            pass
 
 
 @app.route("/memory")
