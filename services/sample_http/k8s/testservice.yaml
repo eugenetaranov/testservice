@@ -92,7 +92,7 @@ metadata:
   name: testservice
 spec:
   rules:
-  - host: testservice.local
+  - host: testservice.test
     http:
       paths:
       - pathType: Prefix

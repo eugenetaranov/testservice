@@ -127,7 +127,7 @@ terraform apply -var="cluster_name=my-cluster" -var="ingress_dns=testservice.exa
 | `replicas`           | `1`                  | Number of pod replicas          |
 | `stickiness_enabled` | `false`              | Enable Traefik sticky cookies   |
 | `stickiness_maxage`  | `30`                 | Sticky cookie max age (seconds) |
-| `ingress_dns`        | `testservice.local`  | Ingress hostname                |
+| `ingress_dns`        | `testservice.test`   | Ingress hostname                |
 
 ## Sticky sessions
 

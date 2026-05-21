@@ -31,5 +31,5 @@ variable "stickiness_maxage" {
 variable "ingress_dns" {
   description = "Hostname to be used in ingress"
   type        = string
-  default     = "testservice.local"
+  default     = "testservice.test"
 }
